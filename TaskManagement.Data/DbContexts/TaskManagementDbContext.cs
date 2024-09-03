@@ -1,0 +1,25 @@
+﻿using Microsoft.EntityFrameworkCore;
+using TaskManagement.Domain.Entities;
+using UserTask = TaskManagement.Domain.Entities.UserTask;
+
+namespace TaskManagement.Data.DbContexts
+{
+    public class TaskManagementDbContext:DbContext
+    {
+        public TaskManagementDbContext(DbContextOptions<TaskManagementDbContext> options):base(options) { }
+
+        public DbSet<User> Users { get; set; }
+        public DbSet<UserTask> Tasks { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Username)
+                .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+        }
+    }
+}

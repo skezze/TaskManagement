@@ -3,19 +3,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManagement.Api", "TaskManagement.Api\TaskManagement.Api.csproj", "{2BDA836A-6C14-4EC4-B491-5A8EA2F7A09D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskManagement.Api", "TaskManagement.Api\TaskManagement.Api.csproj", "{2BDA836A-6C14-4EC4-B491-5A8EA2F7A09D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManagement.Domain", "TaskManagement.Domain\TaskManagement.Domain.csproj", "{7CA685CE-D8C0-4450-8BC7-D9B5B2EDEAF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskManagement.Domain", "TaskManagement.Domain\TaskManagement.Domain.csproj", "{7CA685CE-D8C0-4450-8BC7-D9B5B2EDEAF0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManagement.Application", "TaskManagement.Application\TaskManagement.Application.csproj", "{F18FD2BE-0FCB-43B5-8C26-16E30A8D474B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskManagement.Application", "TaskManagement.Application\TaskManagement.Application.csproj", "{F18FD2BE-0FCB-43B5-8C26-16E30A8D474B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManagement.Data", "TaskManagement.Data\TaskManagement.Data.csproj", "{57537DC1-8D38-4B92-A4FA-38AC3C17860E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskManagement.Data", "TaskManagement.Data\TaskManagement.Data.csproj", "{57537DC1-8D38-4B92-A4FA-38AC3C17860E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManagement.Tests", "TaskManagement.Tests\TaskManagement.Tests.csproj", "{33F2DCEA-B288-4FD5-8178-D64A91829D2F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskManagement.Tests", "TaskManagement.Tests\TaskManagement.Tests.csproj", "{33F2DCEA-B288-4FD5-8178-D64A91829D2F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FE6E59D8-88BA-415B-ADB6-C1C486654BC6}"
 	ProjectSection(SolutionItems) = preProject
 		docker-compose.yaml = docker-compose.yaml
+		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
 	EndProjectSection
 EndProject
 Global

@@ -1,0 +1,73 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using TaskManagement.Application.Interfaces;
+using TaskManagement.Application.Methods;
+using TaskManagement.Domain.DTOs;
+using TaskManagement.Domain.Models;
+
+namespace TaskManagement.Api.Controllers
+{
+    [Controller]
+    public class UserController:ControllerBase
+    {
+        private readonly IUserService userService;
+        private readonly IConfiguration configuration;
+
+        public UserController(IUserService userService, IConfiguration configuration)
+        {
+            this.userService = userService;
+            this.configuration = configuration;
+        }
+
+        [HttpPost]
+        [Route("users/register")]
+        public async Task<IActionResult> Register([FromBody]RegisterDTO registerDto)
+        {
+            string errorMessage = string.Empty;
+            PasswordValidator passwordValidator = new PasswordValidator();
+
+            if (registerDto == null &&
+                passwordValidator.ValidatePassword(registerDto.Password, out errorMessage))
+            {
+                var user = await userService.RegisterUserAsync(registerDto);
+                return Ok(User);
+            }
+            return BadRequest(new ErrorResponse() { Message = errorMessage});
+        }
+
+        [HttpPost]
+        [Route("users/login")]
+        public async Task<IActionResult> Login([FromBody]LoginDTO loginDto)
+        {
+            if (loginDto is null)
+            {
+                return BadRequest(new ErrorResponse() { Message = "Invalid client request" });
+            }
+            var user = await userService.LoginUserAsync(loginDto);
+            if (user is not null)
+            {
+                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration
+                    .GetSection("AppSettings")["Secret"]));
+                var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+                var tokeOptions = new JwtSecurityToken(
+                    issuer: configuration.GetSection("AppSettings")["LocalhostUrl"],
+                    audience: configuration.GetSection("AppSettings")["LocalhostUrl"],
+                    claims: new List<Claim>(),
+                    expires: DateTime.Now.AddMinutes(5),
+                    signingCredentials: signinCredentials
+                );
+
+                var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
+
+                return Ok(new AuthenticatedResponse { Token = tokenString });
+            }
+
+            return Unauthorized(new ErrorResponse() { Message = "Invalid client credentials" });
+        } 
+
+
+    }
+}
