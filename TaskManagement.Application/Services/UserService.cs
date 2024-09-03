@@ -28,7 +28,7 @@ namespace TaskManagement.Application.Services
         public async Task<User> LoginUserAsync(LoginDTO loginDto)
         {
             var user = await _userRepository.GetAsync(loginDto);
-            _logger.LogInformation($"User {user.Username} login successfully.");
+            //_logger.LogInformation($"User {user.Username} login successfully.");
 
             return user;
         }
