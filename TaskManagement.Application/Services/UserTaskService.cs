@@ -1,5 +1,4 @@
 ﻿using TaskManagement.Application.Interfaces;
-using TaskManagement.Application.Repositories;
 using TaskManagement.Domain.DTOs;
 using TaskManagement.Domain.Entities;
 using TaskManagement.Domain.Enums;
@@ -18,7 +17,19 @@ namespace TaskManagement.Application.Services
 
         public async Task<UserTask> CreateTaskAsync(UserTaskDTO userTaskDTO)
         {
-            return await _userTaskRepository.CreateTaskAsync(userTaskDTO);
+            var task = new UserTask()
+            {
+                UserId = userTaskDTO.UserId,
+                Description = userTaskDTO.Description,
+                DueDate = userTaskDTO.DueDate,
+                Title = userTaskDTO.Title,
+                Status = userTaskDTO.Status,
+                Priority = userTaskDTO.Priority
+            };
+
+            var taskInDb = await _userTaskRepository.CreateTaskAsync(task);
+
+            return taskInDb;
         }
 
         public async Task<IEnumerable<UserTask>> GetTasksAsync(
@@ -31,26 +42,57 @@ namespace TaskManagement.Application.Services
     int pageNumber = 1,
     int pageSize = 10)
         {
-            return await _userTaskRepository.GetTasksAsync(userId, status, dueDate, priority, sortBy, descending, pageNumber, pageSize);
+            var tasksPageInDb = await _userTaskRepository.GetTasksAsync(userId, status, dueDate, priority, sortBy, descending, pageNumber, pageSize);
+            return tasksPageInDb;
         }
 
         public async Task<UserTask> GetTaskByIdAsync(Guid userId, Guid taskId)
         {
-            return await _userTaskRepository.GetTaskByIdAsync(userId, taskId);
+            var task = new UserTask()
+            {
+                UserId= userId,
+                Id= taskId
+            };
+            var taskInDb = await _userTaskRepository.GetTaskByIdAsync(task);
+            return taskInDb;
         }
 
         public async Task<UserTask> UpdateTaskAsync(UserTaskDTO userTaskDTO)
         {
-            if(_userTaskRepository.GetTaskByIdAsync(userTaskDTO.UserId, userTaskDTO.Id) != null)
+            var task = new UserTask()
             {
-                return await _userTaskRepository.UpdateTaskAsync(userTaskDTO);
+                UserId = userTaskDTO.UserId,
+                Id = userTaskDTO.Id
+            };
+            var taskInDb = await _userTaskRepository.GetTaskByIdAsync(task);
+            if (taskInDb != null)
+            {
+                taskInDb.Description = userTaskDTO.Description;
+                taskInDb.DueDate = userTaskDTO.DueDate;
+                taskInDb.Title = userTaskDTO.Title;
+                taskInDb.Status = userTaskDTO.Status;
+                taskInDb.Priority = userTaskDTO.Priority;
+                taskInDb.UpdatedAt = DateTime.UtcNow;
+
+                return await _userTaskRepository.UpdateTaskAsync(taskInDb);
             }
             return null;            
         }
 
         public async Task<bool> DeleteTaskAsync(Guid userId, Guid taskId)
         {
-            return await _userTaskRepository.DeleteTaskAsync(userId, taskId);
+            var task = new UserTask()
+            {
+                UserId = userId,
+                Id = taskId
+            };
+            var taskInDb = await _userTaskRepository.GetTaskByIdAsync(task);
+            if (taskInDb != null)
+            {
+                await _userTaskRepository.DeleteTaskAsync(taskInDb);
+                return true;  
+            };
+            return false;
         }
     }
 }

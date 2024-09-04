@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TaskManagement.Application.Interfaces;
-using TaskManagement.Application.Methods;
 using TaskManagement.Data.DbContexts;
-using TaskManagement.Domain.DTOs;
 using TaskManagement.Domain.Entities;
 
 namespace TaskManagement.Application.Repositories
@@ -21,25 +19,18 @@ namespace TaskManagement.Application.Repositories
             return await _context.Users.FirstOrDefaultAsync(x=>x.Id == id);
         }
 
-        public async Task<User> GetAsync(LoginDTO loginDto)
+        public async Task<User> GetAsync(User user)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(x =>
-            x.Username == loginDto.UserNameOrEmail ||
-            x.Email == loginDto.UserNameOrEmail &&
-            x.PasswordHash == PasswordHasher.HashPassword(loginDto.Password));
-            return user;
+            var userInDb = await _context.Users.FirstOrDefaultAsync(x =>
+            (x.Username == user.Username ||
+            x.Email == user.Email) &&
+            x.PasswordHash == user.PasswordHash);
+
+            return userInDb;
         }
 
-        public async Task<User> AddAsync(RegisterDTO registerDto)
+        public async Task<User> AddAsync(User user)
         {
-            var user = new User
-            {
-                Username = registerDto.UserName,
-                Email = registerDto.Email,
-                PasswordHash = PasswordHasher.HashPassword(registerDto.Password),
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
             return user;

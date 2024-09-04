@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using TaskManagement.Application.Interfaces;
 using TaskManagement.Application.Methods;
 using TaskManagement.Domain.DTOs;
@@ -9,41 +10,56 @@ namespace TaskManagement.Application.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-        private readonly ILogger<UserService> _logger;
 
         public UserService(IUserRepository userRepository, ILogger<UserService> logger)
         {
             _userRepository = userRepository;
-            _logger = logger;
         }
 
         public async Task<User> RegisterUserAsync(RegisterDTO registerDto)
         {
-            var user = await _userRepository.AddAsync(registerDto);
-            _logger.LogInformation($"User {user.Username} registered successfully.");
-
-            return user;
+            var user = new User
+            {
+                Username = registerDto.UserName,
+                Email = registerDto.Email,
+                PasswordHash = PasswordHasher.HashPassword(registerDto.Password),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+            if(_userRepository.GetAsync(user) != null)
+            {
+                return null;
+            }
+            var userInDb = await _userRepository.AddAsync(user);
+            
+            return userInDb;
         }
 
         public async Task<User> LoginUserAsync(LoginDTO loginDto)
         {
-            var user = await _userRepository.GetAsync(loginDto);
-            //_logger.LogInformation($"User {user.Username} login successfully.");
+            var user = new User()
+            {
+                Username = loginDto.UserNameOrEmail,
+                Email = loginDto.UserNameOrEmail,
+                PasswordHash = PasswordHasher.HashPassword(loginDto.Password)
+            };
 
-            return user;
+            var userInDb = await _userRepository.GetAsync(user);
+
+            return userInDb;
         }
 
         public async Task<User> GetUserByIdAsync(Guid userId)
         {
-            return await _userRepository.GetByIdAsync(userId);
+            var userInDb = await _userRepository.GetByIdAsync(userId);
+            return userInDb;
         }
 
         public async Task<User> UpdateUserAsync(User user)
         {
             user.UpdatedAt = DateTime.UtcNow;
-            await _userRepository.UpdateAsync(user);
-            _logger.LogInformation($"User {user.Id} updated successfully.");
-            return user;
+            var userInDb = await _userRepository.UpdateAsync(user);
+            return userInDb;
         }
     }
 }

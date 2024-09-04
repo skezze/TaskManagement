@@ -80,7 +80,10 @@ namespace TaskManagement.Api.Controllers
             var userId = Guid.Parse(userIdClaim.Value);
             var success = await _userTaskService.DeleteTaskAsync(userId, id);
 
-            if (!success) return NotFound();
+            if (!success)
+            {
+                return NotFound(); 
+            }
             return NoContent();
         }
     }

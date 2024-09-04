@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TaskManagement.Application.Interfaces;
 using TaskManagement.Data.DbContexts;
-using TaskManagement.Domain.DTOs;
 using TaskManagement.Domain.Entities;
 using TaskManagement.Domain.Enums;
 using TaskStatus = TaskManagement.Domain.Enums.TaskStatus;
@@ -17,17 +16,8 @@ namespace TaskManagement.Application.Repositories
             _context = context;
         }
 
-        public async Task<UserTask> CreateTaskAsync(UserTaskDTO userTaskDTO)
+        public async Task<UserTask> CreateTaskAsync(UserTask task)
         {
-            var task = new UserTask()
-            {
-                UserId = userTaskDTO.UserId,
-                Description = userTaskDTO.Description,
-                DueDate = userTaskDTO.DueDate,
-                Title = userTaskDTO.Title,
-                Status = userTaskDTO.Status,
-                Priority = userTaskDTO.Priority
-            };
             _context.UserTasks.Add(task);
             await _context.SaveChangesAsync();
             return task;
@@ -71,34 +61,22 @@ namespace TaskManagement.Application.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<UserTask> GetTaskByIdAsync(Guid userId, Guid taskId)
+        public async Task<UserTask> GetTaskByIdAsync(UserTask userTask)
         {
-            return await _context.UserTasks.FirstOrDefaultAsync(t => t.UserId == userId && t.Id == taskId);
+            return await _context.UserTasks.FirstOrDefaultAsync(t => t.UserId == userTask.UserId && t.Id == userTask.Id);
         }
 
-        public async Task<UserTask> UpdateTaskAsync(UserTaskDTO userTaskDTO)
+        public async Task<UserTask> UpdateTaskAsync(UserTask userTask)
         {
-            var userTaskInDb = await _context.UserTasks.FirstOrDefaultAsync(x=>x.Id==userTaskDTO.Id);
-
-            userTaskInDb.Description = userTaskDTO.Description;
-            userTaskInDb.DueDate = userTaskDTO.DueDate;
-            userTaskInDb.Title = userTaskDTO.Title;
-            userTaskInDb.Status = userTaskDTO.Status;
-            userTaskInDb.Priority = userTaskDTO.Priority;
-            userTaskInDb.UpdatedAt  = DateTime.UtcNow;
-
+            _context.UserTasks.Update(userTask);
             await _context.SaveChangesAsync();
-            return userTaskInDb;
+            return userTask;
         }
 
-        public async Task<bool> DeleteTaskAsync(Guid userId, Guid taskId)
+        public async Task DeleteTaskAsync(UserTask userTask)
         {
-            var task = await _context.UserTasks.FirstOrDefaultAsync(t => t.UserId == userId && t.Id == taskId);
-            if (task == null) return false;
-
-            _context.UserTasks.Remove(task);
+            _context.UserTasks.Remove(userTask);
             await _context.SaveChangesAsync();
-            return true;
         }
     }
 }
