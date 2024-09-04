@@ -76,11 +76,19 @@ namespace TaskManagement.Application.Repositories
             return await _context.UserTasks.FirstOrDefaultAsync(t => t.UserId == userId && t.Id == taskId);
         }
 
-        public async Task<UserTask> UpdateTaskAsync(UserTask task)
+        public async Task<UserTask> UpdateTaskAsync(UserTaskDTO userTaskDTO)
         {
-            _context.UserTasks.Update(task);
+            var userTaskInDb = await _context.UserTasks.FirstOrDefaultAsync(x=>x.Id==userTaskDTO.Id);
+
+            userTaskInDb.Description = userTaskDTO.Description;
+            userTaskInDb.DueDate = userTaskDTO.DueDate;
+            userTaskInDb.Title = userTaskDTO.Title;
+            userTaskInDb.Status = userTaskDTO.Status;
+            userTaskInDb.Priority = userTaskDTO.Priority;
+            userTaskInDb.UpdatedAt  = DateTime.UtcNow;
+
             await _context.SaveChangesAsync();
-            return task;
+            return userTaskInDb;
         }
 
         public async Task<bool> DeleteTaskAsync(Guid userId, Guid taskId)

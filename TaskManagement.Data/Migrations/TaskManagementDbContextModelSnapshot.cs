@@ -75,10 +75,6 @@ namespace TaskManagement.Data.Migrations
                     b.Property<DateTime?>("DueDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("LastModified")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<int>("Priority")
                         .HasColumnType("integer");
 

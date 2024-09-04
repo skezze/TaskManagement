@@ -12,8 +12,8 @@ using TaskManagement.Data.DbContexts;
 namespace TaskManagement.Data.Migrations
 {
     [DbContext(typeof(TaskManagementDbContext))]
-    [Migration("20240904140157_rename task to usertask")]
-    partial class renametasktousertask
+    [Migration("20240904202512_some changes in usertask model")]
+    partial class somechangesinusertaskmodel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -76,10 +76,6 @@ namespace TaskManagement.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("DueDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("LastModified")
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Priority")

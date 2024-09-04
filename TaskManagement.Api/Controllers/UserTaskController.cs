@@ -1,11 +1,8 @@
-﻿using TaskManagement.Domain.Entities;
-using TaskManagement.Domain.Enums;
+﻿using TaskManagement.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using TaskManagement.Application.Interfaces;
 using TaskStatus = TaskManagement.Domain.Enums.TaskStatus;
-using TaskManagement.Application.Services;
 using TaskManagement.Domain.DTOs;
 
 namespace TaskManagement.Api.Controllers
@@ -59,13 +56,19 @@ namespace TaskManagement.Api.Controllers
 
         [HttpPut]
         [Route("/tasks/{id}")]
-        public async Task<IActionResult> UpdateTask(Guid id, UserTask task)
+        public async Task<IActionResult> UpdateTask(UserTaskDTO userTaskDto)
         {
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "UserId");
             var userId = Guid.Parse(userIdClaim.Value);
-            if (id != task.Id || userId != task.UserId) return BadRequest();
+            userTaskDto.UserId = userId;
+            if (userId != userTaskDto.UserId) return BadRequest();
 
-            var updatedTask = await _userTaskService.UpdateTaskAsync(task);
+            var updatedTask = await _userTaskService.UpdateTaskAsync(userTaskDto);
+            if (updatedTask == null)
+            { 
+                return BadRequest(); 
+            }
+
             return Ok(updatedTask);
         }
 

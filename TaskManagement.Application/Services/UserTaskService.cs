@@ -1,4 +1,5 @@
 ﻿using TaskManagement.Application.Interfaces;
+using TaskManagement.Application.Repositories;
 using TaskManagement.Domain.DTOs;
 using TaskManagement.Domain.Entities;
 using TaskManagement.Domain.Enums;
@@ -38,9 +39,13 @@ namespace TaskManagement.Application.Services
             return await _userTaskRepository.GetTaskByIdAsync(userId, taskId);
         }
 
-        public async Task<UserTask> UpdateTaskAsync(UserTask task)
+        public async Task<UserTask> UpdateTaskAsync(UserTaskDTO userTaskDTO)
         {
-            return await _userTaskRepository.UpdateTaskAsync(task);
+            if(_userTaskRepository.GetTaskByIdAsync(userTaskDTO.UserId, userTaskDTO.Id) != null)
+            {
+                return await _userTaskRepository.UpdateTaskAsync(userTaskDTO);
+            }
+            return null;            
         }
 
         public async Task<bool> DeleteTaskAsync(Guid userId, Guid taskId)
