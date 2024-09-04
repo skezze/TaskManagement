@@ -3,6 +3,7 @@ services:
     image: postgres:14-alpine
     ports:
       - 5111:5432
+    container_name: postgres
     volumes:
       - ~/apps/postgres:/var/lib/postgresql/data
     environment:
@@ -10,13 +11,16 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_DB=TaskManagement
 
-  sound-api-service:
+  api:
     build:
         context: .
         dockerfile: ./TaskManagement.Api/Dockerfile
+    container_name: api
     environment:
         - ASPNETCORE_ENVIRONMENT=Development
         - ASPNETCORE_URLS=https://+:443;http://+:80 
+        - ASPNETCORE_Kestrel__Certificates__Default__Password=qwerty12345
+        - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     volumes:
         - ~/.aspnet/https:/https:ro
     depends_on:
@@ -25,7 +29,3 @@ services:
     ports:
     - 5000:443
     - 5001:80
-    command: >
-      sh -c "cd ./TaskManagement.Data && dotnet ef database update --startup-project ../TaskManagement.Api &&
-             dotnet YourProject.dll"
-  

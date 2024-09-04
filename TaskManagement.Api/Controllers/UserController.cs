@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -29,7 +30,7 @@ namespace TaskManagement.Api.Controllers
             string errorMessage = string.Empty;
             PasswordValidator passwordValidator = new PasswordValidator();
 
-            if (registerDto == null &&
+            if (registerDto != null &&
                 passwordValidator.ValidatePassword(registerDto.Password, out errorMessage))
             {
                 var user = await userService.RegisterUserAsync(registerDto);
@@ -39,15 +40,32 @@ namespace TaskManagement.Api.Controllers
         }
 
         [HttpPost]
+        [Route("users/is-user-authorized")]
+        [Authorize]
+        public async Task<IActionResult> IsUserAuthorized([FromBody] LoginDTO loginDTO)
+        {
+            if (loginDTO == null)
+            {
+                return BadRequest(new ErrorResponse() { Message = "Invalid client credentials" });
+            }
+            var user = await userService.LoginUserAsync(loginDTO);
+            if (user != null)
+            {
+                return Ok(user);
+            }
+            return BadRequest(new ErrorResponse() { Message = "Invalid client credentials" });
+        }
+
+        [HttpPost]
         [Route("users/login")]
         public async Task<IActionResult> Login([FromBody]LoginDTO loginDto)
         {
-            if (loginDto is null)
+            if (loginDto == null)
             {
                 return BadRequest(new ErrorResponse() { Message = "Invalid client request" });
             }
             var user = await userService.LoginUserAsync(loginDto);
-            if (user is not null)
+            if (user != null)
             {
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration
                     .GetSection("AppSettings")["Secret"]));
