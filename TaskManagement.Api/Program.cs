@@ -69,6 +69,9 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserTaskService, UserTaskService>();
+builder.Services.AddScoped<IUserTaskRepository, UserTaskRepository>();
+
 builder.Services.AddAuthorization();
 
 var app = builder.Build();

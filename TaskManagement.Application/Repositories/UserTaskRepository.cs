@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TaskManagement.Application.Interfaces;
 using TaskManagement.Data.DbContexts;
+using TaskManagement.Domain.DTOs;
 using TaskManagement.Domain.Entities;
 using TaskManagement.Domain.Enums;
 using TaskStatus = TaskManagement.Domain.Enums.TaskStatus;
@@ -16,8 +17,17 @@ namespace TaskManagement.Application.Repositories
             _context = context;
         }
 
-        public async Task<UserTask> CreateTaskAsync(UserTask task)
+        public async Task<UserTask> CreateTaskAsync(UserTaskDTO userTaskDTO)
         {
+            var task = new UserTask()
+            {
+                UserId = userTaskDTO.UserId,
+                Description = userTaskDTO.Description,
+                DueDate = userTaskDTO.DueDate,
+                Title = userTaskDTO.Title,
+                Status = userTaskDTO.Status,
+                Priority = userTaskDTO.Priority
+            };
             _context.UserTasks.Add(task);
             await _context.SaveChangesAsync();
             return task;

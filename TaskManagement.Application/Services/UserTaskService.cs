@@ -1,4 +1,5 @@
 ﻿using TaskManagement.Application.Interfaces;
+using TaskManagement.Domain.DTOs;
 using TaskManagement.Domain.Entities;
 using TaskManagement.Domain.Enums;
 using TaskStatus = TaskManagement.Domain.Enums.TaskStatus;
@@ -14,9 +15,9 @@ namespace TaskManagement.Application.Services
             _userTaskRepository = userTaskRepository;
         }
 
-        public async Task<UserTask> CreateTaskAsync(UserTask task)
+        public async Task<UserTask> CreateTaskAsync(UserTaskDTO userTaskDTO)
         {
-            return await _userTaskRepository.CreateTaskAsync(task);
+            return await _userTaskRepository.CreateTaskAsync(userTaskDTO);
         }
 
         public async Task<IEnumerable<UserTask>> GetTasksAsync(

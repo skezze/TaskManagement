@@ -36,7 +36,7 @@ namespace TaskManagement.Api.Controllers
                 var user = await userService.RegisterUserAsync(registerDto);
                 return Ok(User);
             }
-            return BadRequest(new ErrorResponse() { Message = errorMessage});
+            return BadRequest(new ErrorResponse() { ErrorMessage = errorMessage});
         }
 
         [HttpPost]
@@ -46,14 +46,14 @@ namespace TaskManagement.Api.Controllers
         {
             if (loginDTO == null)
             {
-                return BadRequest(new ErrorResponse() { Message = "Invalid client credentials" });
+                return BadRequest(new ErrorResponse() { ErrorMessage = "Invalid client credentials" });
             }
             var user = await userService.LoginUserAsync(loginDTO);
             if (user != null)
             {
                 return Ok(user);
             }
-            return BadRequest(new ErrorResponse() { Message = "Invalid client credentials" });
+            return BadRequest(new ErrorResponse() { ErrorMessage = "Invalid client credentials" });
         }
 
         [HttpPost]
@@ -62,7 +62,7 @@ namespace TaskManagement.Api.Controllers
         {
             if (loginDto == null)
             {
-                return BadRequest(new ErrorResponse() { Message = "Invalid client request" });
+                return BadRequest(new ErrorResponse() { ErrorMessage = "Invalid client request" });
             }
             var user = await userService.LoginUserAsync(loginDto);
             if (user != null)
@@ -73,7 +73,12 @@ namespace TaskManagement.Api.Controllers
                 var tokeOptions = new JwtSecurityToken(
                     issuer: configuration.GetSection("AppSettings")["LocalhostUrl"],
                     audience: configuration.GetSection("AppSettings")["LocalhostUrl"],
-                    claims: new List<Claim>(),
+                    claims: new[]
+                    {
+                        new Claim("UserId", user.Id.ToString()),
+                        new Claim(JwtRegisteredClaimNames.Sub, user.Username),
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                    },
                     expires: DateTime.Now.AddMinutes(5),
                     signingCredentials: signinCredentials
                 );
@@ -83,7 +88,7 @@ namespace TaskManagement.Api.Controllers
                 return Ok(new AuthenticatedResponse { Token = tokenString });
             }
 
-            return Unauthorized(new ErrorResponse() { Message = "Invalid client credentials" });
+            return Unauthorized(new ErrorResponse() { ErrorMessage = "Invalid client credentials" });
         } 
 
 

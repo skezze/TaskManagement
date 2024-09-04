@@ -35,12 +35,6 @@ namespace TaskManagement.Domain.Entities
         [Required]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime LastModified
-        {
-            get { return UpdatedAt; }
-            set { UpdatedAt = DateTime.UtcNow; }
-        }
     }
 
 }

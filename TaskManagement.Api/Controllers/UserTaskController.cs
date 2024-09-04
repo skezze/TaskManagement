@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TaskManagement.Application.Interfaces;
 using TaskStatus = TaskManagement.Domain.Enums.TaskStatus;
+using TaskManagement.Application.Services;
+using TaskManagement.Domain.DTOs;
 
 namespace TaskManagement.Api.Controllers
 {
@@ -14,22 +16,22 @@ namespace TaskManagement.Api.Controllers
     public class UserTaskController : ControllerBase
     {
         private readonly IUserTaskService _userTaskService;
+        private readonly IUserService _userService;
 
-        public UserTaskController(IUserTaskService userTaskService)
+        public UserTaskController(IUserTaskService userTaskService, IUserService userService)
         {
             _userTaskService = userTaskService;
+            _userService = userService;
         }
 
-        private Guid GetUserId() => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-
-        [HttpPost]
+        [HttpPost]        
         [Route("/tasks")]
-        public async Task<IActionResult> CreateTask(UserTask task)
+        public async Task<IActionResult> CreateTask(UserTaskDTO userTaskDTO)
         {
-            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            task.UserId = userId;
-
-            var createdTask = await _userTaskService.CreateTaskAsync(task);
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "UserId");
+            var userId = Guid.Parse(userIdClaim.Value);
+            userTaskDTO.UserId = userId;
+            var createdTask = await _userTaskService.CreateTaskAsync(userTaskDTO);
             return CreatedAtAction(nameof(GetTaskById), new { id = createdTask.Id }, createdTask);
         }
 
@@ -37,7 +39,8 @@ namespace TaskManagement.Api.Controllers
         [Route("/tasks")]
         public async Task<IActionResult> GetTasks([FromQuery] TaskStatus? status, [FromQuery] DateTime? dueDate, [FromQuery] TaskPriority? priority, [FromQuery] string sortBy, [FromQuery] bool descending, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var userId = GetUserId();
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "UserId");
+            var userId = Guid.Parse(userIdClaim.Value);
             var tasks = await _userTaskService.GetTasksAsync(userId, status, dueDate, priority, sortBy, descending, pageNumber, pageSize);
             return Ok(tasks);
         }
@@ -46,7 +49,8 @@ namespace TaskManagement.Api.Controllers
         [Route("/tasks/{id}")]
         public async Task<IActionResult> GetTaskById(Guid id)
         {
-            var userId = GetUserId();
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "UserId");
+            var userId = Guid.Parse(userIdClaim.Value);
             var task = await _userTaskService.GetTaskByIdAsync(userId, id);
             if (task == null) return NotFound();
 
@@ -57,7 +61,8 @@ namespace TaskManagement.Api.Controllers
         [Route("/tasks/{id}")]
         public async Task<IActionResult> UpdateTask(Guid id, UserTask task)
         {
-            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "UserId");
+            var userId = Guid.Parse(userIdClaim.Value);
             if (id != task.Id || userId != task.UserId) return BadRequest();
 
             var updatedTask = await _userTaskService.UpdateTaskAsync(task);
@@ -68,7 +73,8 @@ namespace TaskManagement.Api.Controllers
         [Route("/tasks/{id}")]
         public async Task<IActionResult> DeleteTask(Guid id)
         {
-            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "UserId");
+            var userId = Guid.Parse(userIdClaim.Value);
             var success = await _userTaskService.DeleteTaskAsync(userId, id);
 
             if (!success) return NotFound();

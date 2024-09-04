@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TaskManagement.Domain.DTOs;
 using TaskManagement.Domain.Entities;
 using TaskManagement.Domain.Enums;
 using TaskStatus = TaskManagement.Domain.Enums.TaskStatus;
@@ -7,7 +8,7 @@ namespace TaskManagement.Application.Interfaces
 {
     public interface IUserTaskRepository
     {
-        Task<UserTask> CreateTaskAsync(UserTask task);
+        Task<UserTask> CreateTaskAsync(UserTaskDTO userTaskDTO);
         Task<IEnumerable<UserTask>> GetTasksAsync(
     Guid userId,
     TaskStatus? status = null,
