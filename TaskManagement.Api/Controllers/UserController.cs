@@ -11,7 +11,7 @@ using TaskManagement.Domain.Models;
 
 namespace TaskManagement.Api.Controllers
 {
-    [Controller]
+    [ApiController]
     public class UserController:ControllerBase
     {
         private readonly IUserService userService;

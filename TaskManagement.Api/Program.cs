@@ -1,11 +1,8 @@
  using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using Swashbuckle.AspNetCore.Filters;
-using System;
 using System.Text;
 using TaskManagement.Application.Interfaces;
 using TaskManagement.Application.Repositories;

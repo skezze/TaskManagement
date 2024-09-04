@@ -9,7 +9,7 @@ namespace TaskManagement.Data.DbContexts
         public TaskManagementDbContext(DbContextOptions<TaskManagementDbContext> options):base(options) { }
 
         public DbSet<User> Users { get; set; }
-        public DbSet<UserTask> Tasks { get; set; }
+        public DbSet<UserTask> UserTasks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
