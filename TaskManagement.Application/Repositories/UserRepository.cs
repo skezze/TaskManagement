@@ -21,7 +21,7 @@ namespace TaskManagement.Application.Repositories
 
         public async Task<User> GetAsync(User user)
         {
-            var userInDb = await _context.Users.FirstOrDefaultAsync(x =>
+            var userInDb = await _context.Users.Include(x=>x.UserTasks).FirstOrDefaultAsync(x =>
             x.Username == user.Username ||
             x.Email == user.Email);
 

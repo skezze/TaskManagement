@@ -16,7 +16,7 @@ namespace TaskManagement.Domain.Entities
         [MaxLength(100)]
         public string Email { get; set; }
 
-        public UserTask[] Tasks { get; set; }
+        public ICollection<UserTask> UserTasks { get; set; }
 
         [Required]
         public string PasswordHash { get; set; }

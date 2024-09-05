@@ -20,6 +20,12 @@ namespace TaskManagement.Data.DbContexts
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.UserTasks)
+                .WithOne(ut => ut.User)
+                .HasForeignKey(ut => ut.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
