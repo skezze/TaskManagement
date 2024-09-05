@@ -8,6 +8,7 @@ using TaskManagement.Application.Interfaces;
 using TaskManagement.Application.Methods;
 using TaskManagement.Domain.DTOs;
 using TaskManagement.Domain.Models;
+using TaskManagement.Domain.ViewModels;
 
 namespace TaskManagement.Api.Controllers
 {
@@ -25,15 +26,21 @@ namespace TaskManagement.Api.Controllers
 
         [HttpPost]
         [Route("users/register")]
-        public async Task<IActionResult> Register([FromBody]RegisterDTO registerDto)
+        public async Task<IActionResult> Register([FromBody]RegisterViewModel registerViewModel)
         {
             string errorMessage = string.Empty;
             PasswordValidator passwordValidator = new PasswordValidator();
 
-            if (registerDto != null &&
-                passwordValidator.ValidatePassword(registerDto.Password, out errorMessage))
+            if (registerViewModel != null &&
+                passwordValidator.ValidatePassword(registerViewModel.Password, out errorMessage))
             {
-                var user = await userService.RegisterUserAsync(registerDto);
+                var registerDTO = new RegisterDTO
+                {
+                    UserName = registerViewModel.UserName,
+                    Password = registerViewModel.Password,
+                    Email = registerViewModel.Email
+                };
+                var user = await userService.RegisterUserAsync(registerDTO);
                 if (user != null)
                 {
                     return Ok(user);
@@ -47,12 +54,18 @@ namespace TaskManagement.Api.Controllers
         [HttpPost]
         [Route("users/is-user-authorized")]
         [Authorize]
-        public async Task<IActionResult> IsUserAuthorized([FromBody] LoginDTO loginDTO)
+        public async Task<IActionResult> IsUserAuthorized([FromBody] LoginViewModel loginViewModel)
         {
-            if (loginDTO == null)
+            if (loginViewModel == null)
             {
                 return BadRequest(new ErrorResponse() { ErrorMessage = "Invalid client credentials" });
             }
+
+            var loginDTO = new LoginDTO 
+            { 
+                UserNameOrEmail = loginViewModel.UserNameOrEmail,
+                Password = loginViewModel.Password
+            };
             var user = await userService.LoginUserAsync(loginDTO);
             if (user != null)
             {
@@ -63,13 +76,19 @@ namespace TaskManagement.Api.Controllers
 
         [HttpPost]
         [Route("users/login")]
-        public async Task<IActionResult> Login([FromBody]LoginDTO loginDto)
+        public async Task<IActionResult> Login([FromBody]LoginViewModel loginViewModel)
         {
-            if (loginDto == null)
+            if (loginViewModel == null)
             {
                 return BadRequest(new ErrorResponse() { ErrorMessage = "Invalid client request" });
             }
-            var user = await userService.LoginUserAsync(loginDto);
+
+            var loginDTO = new LoginDTO
+            {
+                UserNameOrEmail = loginViewModel.UserNameOrEmail,
+                Password = loginViewModel.Password
+            };
+            var user = await userService.LoginUserAsync(loginDTO);
             if (user != null)
             {
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration

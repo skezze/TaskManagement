@@ -1,18 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using TaskManagement.Api.Controllers;
 using TaskManagement.Application.Interfaces;
 using TaskManagement.Domain.DTOs;
 using TaskManagement.Domain.Entities;
 using TaskManagement.Domain.Enums;
-using TaskManagement.Domain.Models;
+using TaskManagement.Domain.ViewModels;
 using TaskStatus = TaskManagement.Domain.Enums.TaskStatus;
 
 namespace TaskManagement.Tests.Controllers
@@ -55,12 +50,19 @@ namespace TaskManagement.Tests.Controllers
                 Priority = TaskPriority.Medium,
                 Status = TaskStatus.InProgress,
             };
+            var taskViewModel = new UserTaskViewModel
+            {
+                Title = "Test Task",
+                DueDate = DateTime.Now,
+                Priority = TaskPriority.Medium,
+                Status = TaskStatus.InProgress,
+            };
             var createdTask = new UserTask { Id = Guid.NewGuid(), Title = "Test Task" };
 
             _userTaskServiceMock.CreateTaskAsync(taskDto).Returns(createdTask);
 
             // Act
-            var result = await _controller.CreateTask(taskDto) as CreatedAtActionResult;
+            var result = await _controller.CreateTask(taskViewModel) as CreatedAtActionResult;
 
             // Assert
             Assert.IsNotNull(result);
@@ -129,13 +131,21 @@ namespace TaskManagement.Tests.Controllers
         {
             // Arrange
             var taskId = Guid.NewGuid();
-            var taskDto = new UserTaskDTO { Title = "Updated Task", UserId = _userId };
+            var taskDto = new UserTaskDTO 
+            { 
+                Title = "Updated Task", 
+                UserId = _userId 
+            };
+            var taskViewModel  = new UserTaskViewModel
+            {
+                Title = "Updated Task"
+            };
 
             var updatedTask = new UserTask { Id = taskId, Title = "Updated Task" };
             _userTaskServiceMock.UpdateTaskAsync(taskDto, taskId).Returns(updatedTask);
 
             // Act
-            var result = await _controller.UpdateTask(taskDto, taskId) as OkObjectResult;
+            var result = await _controller.UpdateTask(taskViewModel, taskId) as OkObjectResult;
 
             // Assert
             Assert.IsNotNull(result);
@@ -148,12 +158,20 @@ namespace TaskManagement.Tests.Controllers
         {
             // Arrange
             var taskId = Guid.NewGuid();
-            var taskDto = new UserTaskDTO { Title = "Non-existent Task", UserId = _userId };
+            var taskDto = new UserTaskDTO 
+            { 
+                Title = "Non-existent Task", 
+                UserId = _userId 
+            };
+            var taskViewModel = new UserTaskViewModel
+            {
+                Title = "Non-existent Task"
+            };
 
             _userTaskServiceMock.UpdateTaskAsync(taskDto, taskId).Returns((UserTask)null);
 
             // Act
-            var result = await _controller.UpdateTask(taskDto, taskId) as BadRequestResult;
+            var result = await _controller.UpdateTask(taskViewModel, taskId) as BadRequestResult;
 
             // Assert
             Assert.IsNotNull(result);
