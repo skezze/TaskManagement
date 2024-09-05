@@ -43,13 +43,6 @@ namespace TaskManagement.Tests.Controllers
         public async Task CreateTask_ValidTask_ReturnsCreatedAtAction()
         {
             // Arrange
-            var taskDto = new UserTaskDTO
-            {
-                Title = "Test Task",
-                DueDate = DateTime.Now,
-                Priority = TaskPriority.Medium,
-                Status = TaskStatus.InProgress,
-            };
             var taskViewModel = new UserTaskViewModel
             {
                 Title = "Test Task",
@@ -59,7 +52,7 @@ namespace TaskManagement.Tests.Controllers
             };
             var createdTask = new UserTask { Id = Guid.NewGuid(), Title = "Test Task" };
 
-            _userTaskServiceMock.CreateTaskAsync(taskDto).Returns(createdTask);
+            _userTaskServiceMock.CreateTaskAsync(Arg.Any<UserTaskDTO>()).Returns(createdTask);
 
             // Act
             var result = await _controller.CreateTask(taskViewModel) as CreatedAtActionResult;
@@ -98,7 +91,10 @@ namespace TaskManagement.Tests.Controllers
         {
             // Arrange
             var taskId = Guid.NewGuid();
-            var task = new UserTask { Id = taskId, UserId = _userId };
+            var task = new UserTask {
+                Id = taskId, 
+                UserId = _userId 
+            };
 
             _userTaskServiceMock.GetTaskByIdAsync(_userId, taskId).Returns(task);
 
@@ -131,18 +127,14 @@ namespace TaskManagement.Tests.Controllers
         {
             // Arrange
             var taskId = Guid.NewGuid();
-            var taskDto = new UserTaskDTO 
-            { 
-                Title = "Updated Task", 
-                UserId = _userId 
-            };
+           
             var taskViewModel  = new UserTaskViewModel
             {
                 Title = "Updated Task"
             };
 
             var updatedTask = new UserTask { Id = taskId, Title = "Updated Task" };
-            _userTaskServiceMock.UpdateTaskAsync(taskDto, taskId).Returns(updatedTask);
+            _userTaskServiceMock.UpdateTaskAsync(Arg.Any<UserTaskDTO>(), taskId).Returns(updatedTask);
 
             // Act
             var result = await _controller.UpdateTask(taskViewModel, taskId) as OkObjectResult;
@@ -158,17 +150,12 @@ namespace TaskManagement.Tests.Controllers
         {
             // Arrange
             var taskId = Guid.NewGuid();
-            var taskDto = new UserTaskDTO 
-            { 
-                Title = "Non-existent Task", 
-                UserId = _userId 
-            };
             var taskViewModel = new UserTaskViewModel
             {
                 Title = "Non-existent Task"
             };
 
-            _userTaskServiceMock.UpdateTaskAsync(taskDto, taskId).Returns((UserTask)null);
+            _userTaskServiceMock.UpdateTaskAsync(Arg.Any<UserTaskDTO>(), taskId).Returns((UserTask)null);
 
             // Act
             var result = await _controller.UpdateTask(taskViewModel, taskId) as BadRequestResult;
