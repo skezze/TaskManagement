@@ -57,12 +57,12 @@ namespace TaskManagement.Application.Services
             return taskInDb;
         }
 
-        public async Task<UserTask> UpdateTaskAsync(UserTaskDTO userTaskDTO)
+        public async Task<UserTask> UpdateTaskAsync(UserTaskDTO userTaskDTO, Guid taskId)
         {
             var task = new UserTask()
             {
                 UserId = userTaskDTO.UserId,
-                Id = userTaskDTO.Id
+                Id= taskId
             };
             var taskInDb = await _userTaskRepository.GetTaskByIdAsync(task);
             if (taskInDb != null)

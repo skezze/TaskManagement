@@ -18,7 +18,7 @@ namespace TaskManagement.Application.Interfaces
     int pageNumber = 1,
     int pageSize = 10);
         Task<UserTask> GetTaskByIdAsync(Guid userId, Guid taskId);
-        Task<UserTask> UpdateTaskAsync(UserTaskDTO userTaskDTO);
+        Task<UserTask> UpdateTaskAsync(UserTaskDTO userTaskDTO, Guid taskId);
         Task<bool> DeleteTaskAsync(Guid userId, Guid taskId);
     }
 }

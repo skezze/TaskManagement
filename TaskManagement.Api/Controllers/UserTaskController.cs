@@ -56,14 +56,14 @@ namespace TaskManagement.Api.Controllers
 
         [HttpPut]
         [Route("/tasks/{id}")]
-        public async Task<IActionResult> UpdateTask(UserTaskDTO userTaskDto)
+        public async Task<IActionResult> UpdateTask(UserTaskDTO userTaskDto, Guid id)
         {
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "UserId");
             var userId = Guid.Parse(userIdClaim.Value);
             userTaskDto.UserId = userId;
             if (userId != userTaskDto.UserId) return BadRequest();
 
-            var updatedTask = await _userTaskService.UpdateTaskAsync(userTaskDto);
+            var updatedTask = await _userTaskService.UpdateTaskAsync(userTaskDto, id);
             if (updatedTask == null)
             { 
                 return BadRequest(); 

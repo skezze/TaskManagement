@@ -26,7 +26,8 @@ namespace TaskManagement.Application.Services
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
-            if(_userRepository.GetAsync(user) != null)
+
+            if (await _userRepository.GetAsync(user) != null)
             {
                 return null;
             }
@@ -41,12 +42,17 @@ namespace TaskManagement.Application.Services
             {
                 Username = loginDto.UserNameOrEmail,
                 Email = loginDto.UserNameOrEmail,
-                PasswordHash = PasswordHasher.HashPassword(loginDto.Password)
-            };
+            };            
 
             var userInDb = await _userRepository.GetAsync(user);
 
-            return userInDb;
+            if (PasswordHasher.VerifyPassword(loginDto.Password, userInDb.PasswordHash)) 
+            {
+                return userInDb;
+            }
+
+            return null;
+            
         }
 
         public async Task<User> GetUserByIdAsync(Guid userId)

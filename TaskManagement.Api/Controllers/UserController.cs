@@ -34,7 +34,12 @@ namespace TaskManagement.Api.Controllers
                 passwordValidator.ValidatePassword(registerDto.Password, out errorMessage))
             {
                 var user = await userService.RegisterUserAsync(registerDto);
-                return Ok(User);
+                if (user != null)
+                {
+                    return Ok(user);
+                }
+                return BadRequest(new ErrorResponse() { ErrorMessage = "user is exist" });
+
             }
             return BadRequest(new ErrorResponse() { ErrorMessage = errorMessage});
         }

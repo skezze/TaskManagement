@@ -28,7 +28,7 @@ namespace TaskManagement.Application.Repositories
     TaskStatus? status = null,
     DateTime? dueDate = null,
     TaskPriority? priority = null,
-    string sortBy = null,
+    string sortBy = "duedate",
     bool descending = false,
     int pageNumber = 1,
     int pageSize = 10)

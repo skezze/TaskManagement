@@ -22,9 +22,8 @@ namespace TaskManagement.Application.Repositories
         public async Task<User> GetAsync(User user)
         {
             var userInDb = await _context.Users.FirstOrDefaultAsync(x =>
-            (x.Username == user.Username ||
-            x.Email == user.Email) &&
-            x.PasswordHash == user.PasswordHash);
+            x.Username == user.Username ||
+            x.Email == user.Email);
 
             return userInDb;
         }
