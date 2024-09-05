@@ -6,6 +6,7 @@ using TaskManagement.Application.Interfaces;
 using TaskManagement.Domain.DTOs;
 using TaskManagement.Domain.Models;
 using TaskManagement.Domain.Entities;
+using TaskManagement.Domain.ViewModels;
 
 namespace TaskManagement.Tests.Controllers
 {
@@ -29,7 +30,7 @@ namespace TaskManagement.Tests.Controllers
         public async Task Register_ValidUser_ReturnsOk()
         {
             // Arrange
-            var registerDto = new RegisterDTO
+            var registerViewModel = new RegisterViewModel
             {
                 UserName = "testuser",
                 Email = "test@example.com",
@@ -37,10 +38,10 @@ namespace TaskManagement.Tests.Controllers
             };
             var user = new User { Id = Guid.NewGuid(), Username = "testuser", Email = "test@example.com" };
 
-            _userServiceMock.RegisterUserAsync(registerDto).Returns(Task.FromResult(user));
+            _userServiceMock.RegisterUserAsync(Arg.Any<RegisterDTO>()).Returns(Task.FromResult(user));
 
             // Act
-            var result = await _userController.Register(registerDto) as OkObjectResult;
+            var result = await _userController.Register(registerViewModel) as OkObjectResult;
 
             // Assert
             Assert.IsNotNull(result);
@@ -52,17 +53,17 @@ namespace TaskManagement.Tests.Controllers
         public async Task Register_UserExists_ReturnsBadRequest()
         {
             // Arrange
-            var registerDto = new RegisterDTO
+            var registerViewModel = new RegisterViewModel
             {
-                UserName = "existinguser",
-                Email = "existing@example.com",
+                UserName = "testuser",
+                Email = "test@example.com",
                 Password = "Password@123"
             };
 
-            _userServiceMock.RegisterUserAsync(registerDto).Returns(Task.FromResult((User)null));
+            _userServiceMock.RegisterUserAsync(Arg.Any<RegisterDTO>()).Returns(Task.FromResult((User)null));
 
             // Act
-            var result = await _userController.Register(registerDto) as BadRequestObjectResult;
+            var result = await _userController.Register(registerViewModel) as BadRequestObjectResult;
 
             // Assert
             Assert.IsNotNull(result);
@@ -75,16 +76,24 @@ namespace TaskManagement.Tests.Controllers
         public async Task Login_ValidCredentials_ReturnsOkWithToken()
         {
             // Arrange
-            var loginDto = new LoginDTO { UserNameOrEmail = "testuser", Password = "Password@123" };
-            var user = new User { Id = Guid.NewGuid(), Username = "testuser" };
+            var loginViewModel = new LoginViewModel
+            {
+                UserNameOrEmail = "testuser",
+                Password = "Password@123"
+            };
+            var user = new User 
+            {
+                Id = Guid.NewGuid(), 
+                Username = "testuser"
+            };
 
-            _userServiceMock.LoginUserAsync(loginDto).Returns(Task.FromResult(user));
+            _userServiceMock.LoginUserAsync(Arg.Any<LoginDTO>()).Returns(Task.FromResult(user));
 
             _configurationMock.GetSection("AppSettings")["Secret"].Returns("8c8324e2-2afc-71a5-649e-9b9tf15af6d3");
             _configurationMock.GetSection("AppSettings")["LocalhostUrl"].Returns("http://localhost");
 
             // Act
-            var result = await _userController.Login(loginDto) as OkObjectResult;
+            var result = await _userController.Login(loginViewModel) as OkObjectResult;
 
             // Assert
             Assert.IsNotNull(result);
@@ -97,12 +106,15 @@ namespace TaskManagement.Tests.Controllers
         public async Task Login_InvalidCredentials_ReturnsUnauthorized()
         {
             // Arrange
-            var loginDto = new LoginDTO { UserNameOrEmail = "wronguser", Password = "wrongpassword" };
-
-            _userServiceMock.LoginUserAsync(loginDto).Returns(Task.FromResult((User)null));
+            var loginViewModel = new LoginViewModel
+            {
+                UserNameOrEmail = "wronguser",
+                Password = "wrongpassword"
+            };
+            _userServiceMock.LoginUserAsync(Arg.Any<LoginDTO>()).Returns(Task.FromResult((User)null));
 
             // Act
-            var result = await _userController.Login(loginDto) as UnauthorizedObjectResult;
+            var result = await _userController.Login(loginViewModel) as UnauthorizedObjectResult;
 
             // Assert
             Assert.IsNotNull(result);
@@ -115,13 +127,21 @@ namespace TaskManagement.Tests.Controllers
         public async Task IsUserAuthorized_ValidLogin_ReturnsOk()
         {
             // Arrange
-            var loginDto = new LoginDTO { UserNameOrEmail = "testuser", Password = "Password@123" };
-            var user = new User { Id = Guid.NewGuid(), Username = "testuser" };
+            var loginViewModel = new LoginViewModel
+            {
+                UserNameOrEmail = "testuser",
+                Password = "Password@123"
+            };
+            var user = new User 
+            { 
+                Id = Guid.NewGuid(), 
+                Username = "testuser" 
+            };
 
-            _userServiceMock.LoginUserAsync(loginDto).Returns(Task.FromResult(user));
+            _userServiceMock.LoginUserAsync(Arg.Any<LoginDTO>()).Returns(Task.FromResult(user));
 
             // Act
-            var result = await _userController.IsUserAuthorized(loginDto) as OkObjectResult;
+            var result = await _userController.IsUserAuthorized(loginViewModel) as OkObjectResult;
 
             // Assert
             Assert.IsNotNull(result);
@@ -133,12 +153,16 @@ namespace TaskManagement.Tests.Controllers
         public async Task IsUserAuthorized_InvalidLogin_ReturnsBadRequest()
         {
             // Arrange
-            var loginDto = new LoginDTO { UserNameOrEmail = "wronguser", Password = "wrongpassword" };
+            var loginViewModel = new LoginViewModel
+            {
+                UserNameOrEmail = "wronguser",
+                Password = "wrongpassword"
+            };
 
-            _userServiceMock.LoginUserAsync(loginDto).Returns(Task.FromResult((User)null));
+            _userServiceMock.LoginUserAsync(Arg.Any<LoginDTO>()).Returns(Task.FromResult((User)null));
 
             // Act
-            var result = await _userController.IsUserAuthorized(loginDto) as BadRequestObjectResult;
+            var result = await _userController.IsUserAuthorized(loginViewModel) as BadRequestObjectResult;
 
             // Assert
             Assert.IsNotNull(result);

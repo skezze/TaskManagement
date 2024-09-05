@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using TaskManagement.Application.Interfaces;
 using TaskStatus = TaskManagement.Domain.Enums.TaskStatus;
 using TaskManagement.Domain.DTOs;
+using TaskManagement.Domain.ViewModels;
 
 namespace TaskManagement.Api.Controllers
 {
@@ -23,10 +24,19 @@ namespace TaskManagement.Api.Controllers
 
         [HttpPost]        
         [Route("/tasks")]
-        public async Task<IActionResult> CreateTask(UserTaskDTO userTaskDTO)
+        public async Task<IActionResult> CreateTask(UserTaskViewModel userTaskViewModel)
         {
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "UserId");
             var userId = Guid.Parse(userIdClaim.Value);
+            var userTaskDTO = new UserTaskDTO
+            {
+                Title = userTaskViewModel.Title,
+                UserId = userId,
+                Description = userTaskViewModel.Description,
+                DueDate = userTaskViewModel.DueDate,
+                Status = userTaskViewModel.Status,
+                Priority = userTaskViewModel.Priority
+            };
             userTaskDTO.UserId = userId;
             var createdTask = await _userTaskService.CreateTaskAsync(userTaskDTO);
             return CreatedAtAction(nameof(GetTaskById), new { id = createdTask.Id }, createdTask);
@@ -56,14 +66,22 @@ namespace TaskManagement.Api.Controllers
 
         [HttpPut]
         [Route("/tasks/{id}")]
-        public async Task<IActionResult> UpdateTask(UserTaskDTO userTaskDto, Guid id)
+        public async Task<IActionResult> UpdateTask(UserTaskViewModel userTaskViewModel, Guid id)
         {
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "UserId");
             var userId = Guid.Parse(userIdClaim.Value);
-            userTaskDto.UserId = userId;
-            if (userId != userTaskDto.UserId) return BadRequest();
 
-            var updatedTask = await _userTaskService.UpdateTaskAsync(userTaskDto, id);
+            var userTaskDTO = new UserTaskDTO
+            {
+                Title = userTaskViewModel.Title,
+                UserId = userId,
+                Description = userTaskViewModel.Description,
+                DueDate = userTaskViewModel.DueDate,
+                Status = userTaskViewModel.Status,
+                Priority = userTaskViewModel.Priority
+            };
+           
+            var updatedTask = await _userTaskService.UpdateTaskAsync(userTaskDTO, id);
             if (updatedTask == null)
             { 
                 return BadRequest(); 
