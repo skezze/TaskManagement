@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Serilog" Version="4.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\TaskManagement.Data\TaskManagement.Data.csproj" />
     <ProjectReference Include="..\TaskManagement.Domain\TaskManagement.Domain.csproj" />
   </ItemGroup>

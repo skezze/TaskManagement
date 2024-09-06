@@ -17,7 +17,7 @@ namespace TaskManagement.Tests.Services
         public void Setup()
         {
             _userRepository = Substitute.For<IUserRepository>();
-            _userService = new UserService(_userRepository, null); // ILogger can be null for testing purposes
+            _userService = new UserService(_userRepository);
         }
 
         [TestMethod]

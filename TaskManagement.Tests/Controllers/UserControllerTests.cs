@@ -68,7 +68,7 @@ namespace TaskManagement.Tests.Controllers
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(400, result.StatusCode);
-            Assert.AreEqual("user is exist", ((ErrorResponse)result.Value).ErrorMessage);
+            Assert.AreEqual("User already exists", ((ErrorResponse)result.Value).ErrorMessage);
         }
 
         // Test cases for Login action
