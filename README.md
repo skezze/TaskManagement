@@ -74,46 +74,62 @@ To stop the application, press `CTRL+C` or run:
 
 ### Task Endpoints
 
-- **Create Task**
-- **Endpoint**: `POST /tasks`
-- **Request Body**:
- ```json
- {
-   "title": "string",
-   "description": "string",
-   "dueDate": "2024-01-01T00:00:00Z",
-   "status": "Pending",
-   "priority": "High"
- }
- ```
-- **Response**: `201 Created` on success, `400 Bad Request` on error.
+- - **Create Task**
+  - `POST /tasks`
+  - **Request Body:**
+    ```json
+    {
+      "title": "string",
+      "description": "string",
+      "dueDate": "yyyy-MM-dd",
+      "priority": "Low | Medium | High",
+      "status": "Pending | InProgress | Completed"
+    }
+    ```
+  - **Response:**  
+    `201 Created` if the task is successfully created, with the task data returned.  
+    `400 BadRequest` if there was an issue creating the task.
 
 - **Get Tasks**
-- **Endpoint**: `GET /tasks`
-- **Query Parameters**: `status`, `dueDate`, `priority`, `sortBy`, `descending`, `pageNumber`, `pageSize`
-- **Response**: `200 OK` with a list of tasks.
+  - `GET /tasks`
+  - **Query Parameters:**
+    - `status` (optional): Filter tasks by status (`Pending`, `InProgress`, `Completed`).
+    - `dueDate` (optional): Filter tasks by due date (`yyyy-MM-dd`).
+    - `priority` (optional): Filter tasks by priority (`Low`, `Medium`, `High`).
+    - `sortBy` (optional): Sort tasks by a specific field (e.g., `title`, `dueDate`).
+    - `descending` (optional): Set to `true` for descending order, `false` for ascending.
+    - `pageNumber` (optional, default `1`): The page number for pagination.
+    - `pageSize` (optional, default `10`): The number of tasks per page.
+  - **Response:**  
+    `200 OK` with a paginated list of tasks.
 
 - **Get Task by ID**
-- **Endpoint**: `GET /tasks/{id}`
-- **Response**: `200 OK` with task details, `404 Not Found` if the task is not found.
+  - `GET /tasks/{id}`
+  - **Response:**  
+    `200 OK` with task details if the task exists.  
+    `404 NotFound` if the task does not exist.
 
 - **Update Task**
-- **Endpoint**: `PUT /tasks/{id}`
-- **Request Body**:
- ```json
- {
-   "title": "string",
-   "description": "string",
-   "dueDate": "2024-01-01T00:00:00Z",
-   "status": "Pending",
-   "priority": "High"
- }
- ```
-- **Response**: `200 OK` on success, `400 Bad Request` on error.
+  - `PUT /tasks/{id}`
+  - **Request Body:**
+    ```json
+    {
+      "title": "string",
+      "description": "string",
+      "dueDate": "yyyy-MM-dd",
+      "priority": "Low | Medium | High",
+      "status": "Pending | InProgress | Completed"
+    }
+    ```
+  - **Response:**  
+    `200 OK` with the updated task if the update is successful.  
+    `400 BadRequest` if there was an issue updating the task.
 
 - **Delete Task**
-- **Endpoint**: `DELETE /tasks/{id}`
-- **Response**: `204 No Content` on success, `404 Not Found` if the task is not found.
+  - `DELETE /tasks/{id}`
+  - **Response:**  
+    `204 NoContent` if the task is successfully deleted.  
+    `404 NotFound` if the task does not exist.
 
 ## Conclusion
 
