@@ -94,10 +94,10 @@ To stop the application, press `CTRL+C` or run:
 - **Get Tasks**
   - `GET /tasks`
   - **Query Parameters:**
-    - `status` (optional): Filter tasks by status (`Pending`, `InProgress`, `Completed`).
+    - `status` (optional): Filter tasks by status (`Pending` - 0, `InProgress` - 1, `Completed` - 2).
     - `dueDate` (optional): Filter tasks by due date (`yyyy-MM-dd`).
-    - `priority` (optional): Filter tasks by priority (`Low`, `Medium`, `High`).
-    - `sortBy` (optional): Sort tasks by a specific field (e.g., `title`, `dueDate`).
+    - `priority` (optional): Filter tasks by priority (`Low` 0, `Medium` - 1, `High` - 2).
+    - `sortBy` (optional): Sort tasks by a specific field (e.g., `priority`, `dueDate`).
     - `descending` (optional): Set to `true` for descending order, `false` for ascending.
     - `pageNumber` (optional, default `1`): The page number for pagination.
     - `pageSize` (optional, default `10`): The number of tasks per page.

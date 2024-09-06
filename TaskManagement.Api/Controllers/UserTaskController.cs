@@ -77,7 +77,7 @@ namespace TaskManagement.Api.Controllers
         /// <returns>200 OK with list of tasks</returns>
         [HttpGet]
         [Route("/tasks")]
-        public async Task<IActionResult> GetTasks([FromQuery] TaskStatus? status, [FromQuery] DateTime? dueDate, [FromQuery] TaskPriority? priority, [FromQuery] string sortBy, [FromQuery] bool descending, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetTasks([FromQuery] TaskStatus? status, [FromQuery] DateTime? dueDate, [FromQuery] TaskPriority? priority, [FromQuery] string? sortBy = "priority", [FromQuery] bool descending = true, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             _logger.Information("GetTasks endpoint hit for user");
 
