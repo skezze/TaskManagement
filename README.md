@@ -36,7 +36,8 @@ The Task Management System is a comprehensive solution for managing tasks and us
 - cd task-management-system
 
 2. **Build and Start Containers**:
--docker-compose up --build
+- docker-compose up --build
+- If the api container crashes, restart. this is because the database container is not fully initialized. The problem occurs once until the original postgres files are created
 
 3. **Access the Application**:
 - The API will be available at `https://localhost:5000` or swagger at `https://localhost:5000/swagger/index.html`.
